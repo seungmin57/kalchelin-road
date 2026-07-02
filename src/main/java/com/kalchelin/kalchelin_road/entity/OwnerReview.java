@@ -22,7 +22,7 @@ public class OwnerReview {
     @Column(nullable = false)
     private double rating;     // 1~5 점수
 
-    public OwnerReview(String title, String content, int rating) {
+    public OwnerReview(String title, String content, double rating) {
         this.title = title;
         this.content = content;
         this.rating = rating;
