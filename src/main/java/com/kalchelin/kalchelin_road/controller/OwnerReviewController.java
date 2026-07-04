@@ -31,4 +31,23 @@ public class OwnerReviewController {
         );
     }
 
+    // [상세 조회] GET  /api/owner-reviews/id
+    @GetMapping("/{id}")     // 주소 끝의 {id} 자리에 들어온 값을 받겠다는 뜻
+    public OwnerReview getReview(@PathVariable Long id) {
+        // @PathVariable = 주소에 있는 {id} 값을 꺼내서 이 매개변수 id에 담아라
+        return ownerReviewService.getReview(id);
+    }
+
+    // [수정] PUT /api/owner-reviews/id
+    @PutMapping("/{id}")    // PUT = 기존 것을 수정할 때 쓰는 요청 방식
+    public OwnerReview updateReview(@PathVariable Long id, @RequestBody OwnerReviewRequest request) {
+        // 주소에서 id를 꺼내고(@PathVariable), 바꿀 내용은 본문 JSON에서 꺼냄(@RequestBody)
+        return ownerReviewService.updateReview(id, request.getTitle(), request.getContent(), request.getRating());
+    }
+
+    // [삭제] DELETE /api/owner-reviews/id
+    @DeleteMapping("/{id}")     // DELETE = 삭제할 때 쓰는 요청 방식
+    public void deleteReview(@PathVariable Long id) {
+        ownerReviewService.deleteReview(id);
+    }
 }

@@ -27,4 +27,10 @@ public class OwnerReview {
         this.content = content;
         this.rating = rating;
     }
+
+    public void update(String title, String content, double rating) {
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
+    }
 }

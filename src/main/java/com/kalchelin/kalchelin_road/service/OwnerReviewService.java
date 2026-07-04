@@ -3,6 +3,7 @@ package com.kalchelin.kalchelin_road.service;
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     //다룰 데이터(엔티티) 가져오기
 import com.kalchelin.kalchelin_road.repository.OwnerReviewRepository;        //DB 접근 도구(리포지토리) 가져오기
 import org.springframework.stereotype.Service;        //@Service 어노테이션 가져오기
+import java.util.NoSuchElementException;
 
 import java.util.List;
 
@@ -26,4 +27,23 @@ public class OwnerReviewService {
         return ownerReviewRepository.findAll();     // 리포지토리로 DB의 모든 평가를 가져와 목록으로 돌려줌
     }
 
+    // [기능 3] 상세 조회 - id로 평가 하나 찾기
+    public OwnerReview getReview(Long id) {
+        return ownerReviewRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 평가가 없습니다. id =" + id));
+        // id로 조회(결과가 없을 수도 있어서 Optional로 감싸져 옴)
+        // orElseThrow = 값이 있으면 꺼내고, 없으면 에러를 던져라
+    }
+
+    // [기능 4] 수정 - id로 찾아서 내용 바꾸기
+    public OwnerReview updateReview(Long id, String title, String content, double rating) {
+        OwnerReview review = getReview(id);     // 상세 조회 메서드 사용
+        review.update(title, content, rating);  // 엔티티 안의 값을 수정 - 엔티티에 메서드 추가
+        return ownerReviewRepository.save(review);  // 바뀐 걸 저장
+    }
+
+    // [기능 5] id로 평가 삭제
+    public void deleteReview(Long id) {
+        ownerReviewRepository.deleteById(id);       // id로 삭제
+    }
 }
