@@ -3,6 +3,8 @@ package com.kalchelin.kalchelin_road.service;
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     //다룰 데이터(엔티티) 가져오기
 import com.kalchelin.kalchelin_road.repository.OwnerReviewRepository;        //DB 접근 도구(리포지토리) 가져오기
 import org.springframework.stereotype.Service;        //@Service 어노테이션 가져오기
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.NoSuchElementException;
 
 import java.util.List;
@@ -10,10 +12,12 @@ import java.util.List;
 @Service
 public class OwnerReviewService {
     private final OwnerReviewRepository ownerReviewRepository;
+    private final FileStorageService fileStorageService;    // (추가)파일 저장을 맡길 도구
 
     // 생성자: Spring이 리포지토리를 자동으로 만들어서 여기에 넣어준다
-    public OwnerReviewService(OwnerReviewRepository ownerReviewRepository) {
+    public OwnerReviewService(OwnerReviewRepository ownerReviewRepository, FileStorageService fileStorageService) {
         this.ownerReviewRepository = ownerReviewRepository;
+        this.fileStorageService = fileStorageService;   // <- 추가
     }
 
     // [기능 1] 새 평가 저장하기
@@ -45,5 +49,14 @@ public class OwnerReviewService {
     // [기능 5] id로 평가 삭제
     public void deleteReview(Long id) {
         ownerReviewRepository.deleteById(id);       // id로 삭제
+    }
+
+    // [기능 6] 이미지 업로드 - id로 평가를 찾아, 파일을 저장하고 그 경로를 평가에 기록
+    public OwnerReview updateImage(Long id, MultipartFile file) {
+        OwnerReview review = getReview(id);                     // 1. 평가 찾기
+        String imagePath = fileStorageService.store(file);      // 2. 파일 저장 - 경로를 받음
+        review.setImageUrl(imagePath);                          // 3. 그 경로를 평가에 기록
+        return ownerReviewRepository.save(review);              // 4. 바뀐 평가 저장
+
     }
 }

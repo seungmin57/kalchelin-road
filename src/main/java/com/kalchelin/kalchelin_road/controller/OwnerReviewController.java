@@ -4,6 +4,7 @@ import com.kalchelin.kalchelin_road.dto.OwnerReviewRequest; // 데이터 요청 
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     // 돌려줄 데이터(엔티티) 가져오기
 import com.kalchelin.kalchelin_road.service.OwnerReviewService;  // 일을 시킬 대상(서비스) 가져오기
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 @RestController                             // 이 클래스는 웹 요청을 받고, 결과를 데이터(JSON)으로 돌려주는 컨트롤러 표시
@@ -49,5 +50,12 @@ public class OwnerReviewController {
     @DeleteMapping("/{id}")     // DELETE = 삭제할 때 쓰는 요청 방식
     public void deleteReview(@PathVariable Long id) {
         ownerReviewService.deleteReview(id);
+    }
+
+    // [이미지 업로드] POST /api/owner-reviews/{id}/image
+    @PostMapping("/{id}/image")     //특정 평가(id) 밑의 image라는 하위 주소로 POST
+    public OwnerReview uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
+        // @PathVariable = 주소의 {id} 값을 꺼냄 / @RequestParam('image') = form-data의 image부분(파일)을 꺼냄
+        return ownerReviewService.updateImage(id, image);
     }
 }
