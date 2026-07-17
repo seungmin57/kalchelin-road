@@ -1,0 +1,42 @@
+package com.kalchelin.kalchelin_road.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class Post {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false, length = 2000)
+    private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)      // 연관관계 매핑 - "여러(Many) 글이 한(One) 작성자에 속한다
+    @JoinColumn(name = "user_id", nullable = false)     // DB에 user_id 컬럼(FK)이 생김
+    private User author;
+
+    private LocalDateTime createdAt;
+
+    public Post(String title, String content, User author) {
+        this.title = title;
+        this.content = content;
+        this.author = author;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+}

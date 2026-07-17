@@ -30,6 +30,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/owner-reviews/**").hasRole("ADMIN")
                         // 회원가입은 누구나
                         .requestMatchers(HttpMethod.POST, "/api/users/signup").permitAll()
+                        // 글 조회는 누구나
+                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                         // 그 외 모든 요청은 로그인(인증)해야 함
                         .anyRequest().authenticated()
                 )
