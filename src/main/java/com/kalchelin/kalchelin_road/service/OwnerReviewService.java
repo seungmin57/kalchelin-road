@@ -1,6 +1,7 @@
 package com.kalchelin.kalchelin_road.service;
 
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     //다룰 데이터(엔티티) 가져오기
+import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.OwnerReviewRepository;        //DB 접근 도구(리포지토리) 가져오기
 import org.springframework.stereotype.Service;        //@Service 어노테이션 가져오기
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ public class OwnerReviewService {
     // [기능 3] 상세 조회 - id로 평가 하나 찾기
     public OwnerReview getReview(Long id) {
         return ownerReviewRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 평가가 없습니다. id =" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 평가가 없습니다. id =" + id));
         // id로 조회(결과가 없을 수도 있어서 Optional로 감싸져 옴)
         // orElseThrow = 값이 있으면 꺼내고, 없으면 에러를 던져라
     }

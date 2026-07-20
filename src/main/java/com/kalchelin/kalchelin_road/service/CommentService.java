@@ -3,6 +3,7 @@ package com.kalchelin.kalchelin_road.service;
 import com.kalchelin.kalchelin_road.entity.Comment;
 import com.kalchelin.kalchelin_road.entity.Post;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class CommentService {
     // 삭제 - 본인 댓글만 (소유권 검사, 글에서 배운 것 재사용)
     public void delete(Long commentId, User currentUser) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
         if(!comment.getAuthor().getId().equals(currentUser.getId()))
             throw new AccessDeniedException("본인 댓글만 삭제할 수 있습니다.");
         commentRepository.delete(comment);

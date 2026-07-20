@@ -2,6 +2,7 @@ package com.kalchelin.kalchelin_road.service;
 
 import com.kalchelin.kalchelin_road.entity.Role;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.exception.DuplicateUsernameException;
 import com.kalchelin.kalchelin_road.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class UserService {
     public User signup(String username, String password) {
         // (1) 이미 있는 아이디면 거부
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+            throw new DuplicateUsernameException("이미 사용 중인 아이디입니다.");
         }
 
         // (2) 비밀번호를 해싱 (평문 -> 알아볼 수 없는 문자열)

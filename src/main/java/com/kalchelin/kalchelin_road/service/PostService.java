@@ -2,6 +2,7 @@ package com.kalchelin.kalchelin_road.service;
 
 import com.kalchelin.kalchelin_road.entity.Post;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.PostRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class PostService {
     // 상세 조회
     public Post findById(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("글을 찾을 수 없습니다. id =" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("글을 찾을 수 없습니다. id =" + id));
     }
 
     // 수정 - 본인 글만
