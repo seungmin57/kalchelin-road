@@ -25,10 +25,14 @@ public class User {
     @Enumerated(EnumType.STRING)    // enum을 글자 그대로 DB에 저장
     private Role role;      // 권한 (오너인지 일반 회원인지)
 
-    public User(String username, String password, Role role) {
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    public User(String username, String password, Role role, String email) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.email = email;
     }
 
 }

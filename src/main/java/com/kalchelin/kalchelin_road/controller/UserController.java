@@ -23,6 +23,6 @@ public class UserController {
     // 회원가입: POST /api/users/signup
     @PostMapping("/signup")
     public User signup(@Valid @RequestBody SignupRequest request) {
-        return userService.signup(request.getUsername(), request.getPassword());
+        return userService.signup(request.getUsername(), request.getPassword(), request.getEmail());
     }
 }
