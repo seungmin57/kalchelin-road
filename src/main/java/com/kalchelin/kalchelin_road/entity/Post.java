@@ -27,16 +27,21 @@ public class Post {
 
     private LocalDateTime createdAt;
 
-    public Post(String title, String content, User author) {
+    @Column(nullable = false)
+    private Double rating;  // 별점 (0.5 ~ 5.0)
+
+    public Post(String title, String content, User author, Double rating) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.rating = rating;
         this.createdAt = LocalDateTime.now();
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, Double rating) {
         this.title = title;
         this.content = content;
+        this.rating = rating;
     }
 
 }

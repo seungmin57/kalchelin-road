@@ -11,6 +11,7 @@ public class PostResponse {
     private final String title;
     private final String content;
     private final String authorName;        // User 통째가 아니라 '이름만'
+    private final Double rating;
     private final LocalDateTime createdAt;
 
     // Post 엔티티를 받아서 필요한 것만 뽑아 담는 생성자
@@ -19,6 +20,7 @@ public class PostResponse {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.authorName = post.getAuthor().getUsername();   // 여기서 프록시가 실제 조회됨
+        this.rating = post.getRating();
         this.createdAt = post.getCreatedAt();
     }
 

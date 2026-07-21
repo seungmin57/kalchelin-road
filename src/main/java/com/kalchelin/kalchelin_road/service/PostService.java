@@ -20,8 +20,8 @@ public class PostService {
     }
 
     // 글 작성 - author는 컨트롤러가 세션에서 꺼내 넘겨준다
-    public Post create(String title, String content, User author) {
-        Post post = new Post(title, content, author);
+    public Post create(String title, String content, User author, Double rating) {
+        Post post = new Post(title, content, author, rating);
         return postRepository.save(post);
     }
 
@@ -38,10 +38,10 @@ public class PostService {
 
     // 수정 - 본인 글만
     @Transactional
-    public Post update(Long id, String title, String content, User currentUser) {
+    public Post update(Long id, String title, String content, User currentUser, Double rating) {
         Post post = findById(id);       // 있는지 확인(없으면 예외)
         checkOwner(post, currentUser);  // 소유권 검사
-        post.update(title, content);    // 엔티티가 자기 상태를 바꿈
+        post.update(title, content, rating);    // 엔티티가 자기 상태를 바꿈
         return post;    // save 필요 없음
 
     }

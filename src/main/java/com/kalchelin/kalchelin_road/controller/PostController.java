@@ -26,7 +26,7 @@ public class PostController {
     @PostMapping
     public PostResponse create(@Valid @RequestBody PostRequest request,
                        @AuthenticationPrincipal CustomUserDetails userDetails) {  // 지금 로그인한 사람
-        Post post = postService.create(request.getTitle(), request.getContent(), userDetails.getUser());
+        Post post = postService.create(request.getTitle(), request.getContent(), userDetails.getUser(), request.getRating());
         return new PostResponse(post);
     }
 
@@ -53,7 +53,7 @@ public class PostController {
             @Valid @RequestBody PostRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Post post = postService.update(id, request.getTitle(), request.getContent(), userDetails.getUser());
+        Post post = postService.update(id, request.getTitle(), request.getContent(), userDetails.getUser(), request.getRating());
         return new PostResponse(post);
     }
 
