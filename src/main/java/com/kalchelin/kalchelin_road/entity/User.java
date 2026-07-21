@@ -1,5 +1,6 @@
 package com.kalchelin.kalchelin_road.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class User {
     @Column(nullable = false, unique = true)        // 비어있으면 안 되고 중복도 안 됨
     private String username;    // 로그인 아이디
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;    // 비밀번호 (나중에 암호화해서 저장)
 

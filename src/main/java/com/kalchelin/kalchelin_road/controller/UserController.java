@@ -2,6 +2,7 @@ package com.kalchelin.kalchelin_road.controller;
 
 
 import com.kalchelin.kalchelin_road.dto.SignupRequest;
+import com.kalchelin.kalchelin_road.dto.UserResponse;
 import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.service.UserService;
 import jakarta.validation.Valid;
@@ -22,7 +23,8 @@ public class UserController {
 
     // 회원가입: POST /api/users/signup
     @PostMapping("/signup")
-    public User signup(@Valid @RequestBody SignupRequest request) {
-        return userService.signup(request.getUsername(), request.getPassword(), request.getEmail());
+    public UserResponse signup(@Valid @RequestBody SignupRequest request) {
+        User user = userService.signup(request.getUsername(), request.getPassword(), request.getEmail());
+        return new UserResponse(user);
     }
 }
