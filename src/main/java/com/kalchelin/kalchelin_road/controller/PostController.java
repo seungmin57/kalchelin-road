@@ -6,6 +6,7 @@ import com.kalchelin.kalchelin_road.entity.Post;
 import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.service.CustomUserDetails;
 import com.kalchelin.kalchelin_road.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class PostController {
 
     // 글 작성: POST /api/posts (로그인한 회원만)
     @PostMapping
-    public PostResponse create(@RequestBody PostRequest request,
+    public PostResponse create(@Valid @RequestBody PostRequest request,
                        @AuthenticationPrincipal CustomUserDetails userDetails) {  // 지금 로그인한 사람
         Post post = postService.create(request.getTitle(), request.getContent(), userDetails.getUser());
         return new PostResponse(post);
@@ -49,7 +50,7 @@ public class PostController {
     @PutMapping("/{id}")
     public PostResponse update(
             @PathVariable Long id,
-            @RequestBody PostRequest request,
+            @Valid @RequestBody PostRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Post post = postService.update(id, request.getTitle(), request.getContent(), userDetails.getUser());

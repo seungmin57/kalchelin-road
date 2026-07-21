@@ -3,6 +3,7 @@ package com.kalchelin.kalchelin_road.controller;
 import com.kalchelin.kalchelin_road.dto.OwnerReviewRequest; // 데이터 요청 그릇 가져오기
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     // 돌려줄 데이터(엔티티) 가져오기
 import com.kalchelin.kalchelin_road.service.OwnerReviewService;  // 일을 시킬 대상(서비스) 가져오기
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,7 @@ public class OwnerReviewController {
     }
 
     @PostMapping    // POST 요청이 이 주소로 오면 아래 메서드 실행
-    public OwnerReview createReview(@RequestBody OwnerReviewRequest request) {
+    public OwnerReview createReview(@Valid @RequestBody OwnerReviewRequest request) {
         // @RequestBody = 브라우저가 보낸 JSON을 위에서 만든 OwnerReviewRequest 그릇에 담아라
         return ownerReviewService.createReview(     // 그릇에서 값을 꺼내 서비스에 넘겨 저장
                 request.getTitle(),
@@ -41,7 +42,7 @@ public class OwnerReviewController {
 
     // [수정] PUT /api/owner-reviews/id
     @PutMapping("/{id}")    // PUT = 기존 것을 수정할 때 쓰는 요청 방식
-    public OwnerReview updateReview(@PathVariable Long id, @RequestBody OwnerReviewRequest request) {
+    public OwnerReview updateReview(@PathVariable Long id,@Valid @RequestBody OwnerReviewRequest request) {
         // 주소에서 id를 꺼내고(@PathVariable), 바꿀 내용은 본문 JSON에서 꺼냄(@RequestBody)
         return ownerReviewService.updateReview(id, request.getTitle(), request.getContent(), request.getRating());
     }

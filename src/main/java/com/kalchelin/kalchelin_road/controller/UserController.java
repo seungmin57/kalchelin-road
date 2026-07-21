@@ -4,6 +4,7 @@ package com.kalchelin.kalchelin_road.controller;
 import com.kalchelin.kalchelin_road.dto.SignupRequest;
 import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,7 @@ public class UserController {
 
     // 회원가입: POST /api/users/signup
     @PostMapping("/signup")
-    public User signup(@RequestBody SignupRequest request) {
+    public User signup(@Valid @RequestBody SignupRequest request) {
         return userService.signup(request.getUsername(), request.getPassword());
     }
 }

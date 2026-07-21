@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
 
 @Slf4j  // Lombok: log 변수를 자동으로 만들어줌
 @RestControllerAdvice   // = @ControllerAdvice + @ResponseBody (반환값을 JSON으로)
@@ -38,7 +40,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
-    // 3. 그 외 예상 못 한 모든 예외 -> 500
+    // 4. 입력값 검증 실패 -> 400
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
+
+        // 검증 실패한 필드들을 우리 형식으로 변환
+        List<ErrorResponse.FieldError> errors = e.getBindingResult()
+                .getFieldErrors()                           // 스프링이 모아둔 실패 목록
+                .stream()
+                .map(fe -> new ErrorResponse.FieldError(
+                        fe.getField(),                      // 필드명 (예: "title")
+                        fe.getDefaultMessage())).toList();  // DTO에 적은 message
+
+        log.warn("검증 실패: {}", errors);
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "입력값이 올바르지 않습니다",
+                errors
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    // 5. 그 외 예상 못 한 모든 예외 -> 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
         log.error("처리되지 않은 예외", e);

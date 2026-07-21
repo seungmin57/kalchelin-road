@@ -4,6 +4,7 @@ import com.kalchelin.kalchelin_road.dto.CommentRequest;
 import com.kalchelin.kalchelin_road.dto.CommentResponse;
 import com.kalchelin.kalchelin_road.service.CommentService;
 import com.kalchelin.kalchelin_road.service.CustomUserDetails;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class CommentController {
     @PostMapping
     public CommentResponse create(
             @PathVariable Long postId,
-            @RequestBody CommentRequest request,
+            @Valid @RequestBody CommentRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
             ) {
                 var comment = commentService.create(postId, request.getContent(), userDetails.getUser());
