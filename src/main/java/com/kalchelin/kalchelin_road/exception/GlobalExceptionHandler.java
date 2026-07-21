@@ -3,6 +3,7 @@ package com.kalchelin.kalchelin_road.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,7 +62,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // 5. 그 외 예상 못 한 모든 예외 -> 500
+    // 5. 요청 본문을 읽을 수 없음 (깨진 JSON, 변환 불가) -> 400
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException e) {
+        log.warn("요청 본문 파싱 실패: {}", e.getMessage());    // 상세 내용은 로그에만
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(), "요청 본문의 형식이 올바르지 않습니다"
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    // 6. 그 외 예상 못 한 모든 예외 -> 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
         log.error("처리되지 않은 예외", e);
