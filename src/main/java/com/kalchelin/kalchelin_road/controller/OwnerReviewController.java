@@ -1,9 +1,12 @@
 package com.kalchelin.kalchelin_road.controller;
 
 import com.kalchelin.kalchelin_road.dto.OwnerReviewRequest; // 데이터 요청 그릇 가져오기
+import com.kalchelin.kalchelin_road.dto.OwnerReviewResponse;
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     // 돌려줄 데이터(엔티티) 가져오기
 import com.kalchelin.kalchelin_road.service.OwnerReviewService;  // 일을 시킬 대상(서비스) 가져오기
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,44 +22,49 @@ public class OwnerReviewController {
     }
 
     @GetMapping     // GET 요청이 이 주소(/api/owner-reviews)로 오면 아래 기능을 실행해라
-    public List<OwnerReview> getAllReviews() {
-        return ownerReviewService.getAllReviews();
+    public List<OwnerReviewResponse> getAllReviews() {
+        return ownerReviewService.getAllReviews().stream().map(OwnerReviewResponse::new) // 각 엔티티를 DTO로
+                                                          .toList();
     }
 
     @PostMapping    // POST 요청이 이 주소로 오면 아래 메서드 실행
-    public OwnerReview createReview(@Valid @RequestBody OwnerReviewRequest request) {
+    public ResponseEntity<OwnerReviewResponse> createReview(@Valid @RequestBody OwnerReviewRequest request) {
         // @RequestBody = 브라우저가 보낸 JSON을 위에서 만든 OwnerReviewRequest 그릇에 담아라
-        return ownerReviewService.createReview(     // 그릇에서 값을 꺼내 서비스에 넘겨 저장
-                request.getTitle(),
-                request.getContent(),
-                request.getRating()
-        );
+        OwnerReview review = ownerReviewService.createReview(request.getTitle(), request.getContent(),
+                request.getRating());
+
+        return ResponseEntity.status(HttpStatus.CREATED)    // 201 상태코드
+                .body(new OwnerReviewResponse(review));
     }
 
     // [상세 조회] GET  /api/owner-reviews/id
     @GetMapping("/{id}")     // 주소 끝의 {id} 자리에 들어온 값을 받겠다는 뜻
-    public OwnerReview getReview(@PathVariable Long id) {
+    public OwnerReviewResponse getReview(@PathVariable Long id) {
         // @PathVariable = 주소에 있는 {id} 값을 꺼내서 이 매개변수 id에 담아라
-        return ownerReviewService.getReview(id);
+        OwnerReview review = ownerReviewService.getReview(id);
+        return new OwnerReviewResponse(review);
     }
 
     // [수정] PUT /api/owner-reviews/id
     @PutMapping("/{id}")    // PUT = 기존 것을 수정할 때 쓰는 요청 방식
-    public OwnerReview updateReview(@PathVariable Long id,@Valid @RequestBody OwnerReviewRequest request) {
+    public OwnerReviewResponse updateReview(@PathVariable Long id,@Valid @RequestBody OwnerReviewRequest request) {
         // 주소에서 id를 꺼내고(@PathVariable), 바꿀 내용은 본문 JSON에서 꺼냄(@RequestBody)
-        return ownerReviewService.updateReview(id, request.getTitle(), request.getContent(), request.getRating());
+        OwnerReview review = ownerReviewService.updateReview(id, request.getTitle(), request.getContent(), request.getRating());
+        return new OwnerReviewResponse(review);
     }
 
     // [삭제] DELETE /api/owner-reviews/id
     @DeleteMapping("/{id}")     // DELETE = 삭제할 때 쓰는 요청 방식
-    public void deleteReview(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         ownerReviewService.deleteReview(id);
+        return ResponseEntity.noContent().build();  //204
     }
 
     // [이미지 업로드] POST /api/owner-reviews/{id}/image
     @PostMapping("/{id}/image")     //특정 평가(id) 밑의 image라는 하위 주소로 POST
-    public OwnerReview uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
+    public OwnerReviewResponse uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
         // @PathVariable = 주소의 {id} 값을 꺼냄 / @RequestParam('image') = form-data의 image부분(파일)을 꺼냄
-        return ownerReviewService.updateImage(id, image);
+        OwnerReview review = ownerReviewService.updateImage(id, image);
+        return new OwnerReviewResponse(review);
     }
 }
