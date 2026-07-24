@@ -8,6 +8,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.List;
 
@@ -79,7 +80,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // 6. 그 외 예상 못 한 모든 예외 -> 500
+    // 6. 잘못된 파일 -> 400
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFile(InvalidFileException e) {
+        log.warn("잘못된 파일 업로드: {}", e.getMessage());
+        ErrorResponse body = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    // 7. 스프링 자체 크기 제한 초과
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxSize(MaxUploadSizeExceededException e) {
+        log.warn("업로드 크기 초과: {}", e.getMessage());
+        ErrorResponse body = new ErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE.value(), "파일 크기는 10MB 이하여야 합니다.");
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(body);
+    }
+
+    // 8. 그 외 예상 못 한 모든 예외 -> 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
         log.error("처리되지 않은 예외", e);
