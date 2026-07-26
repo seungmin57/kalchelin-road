@@ -28,8 +28,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/owner-reviews/**").permitAll()
                         // 오너 평가 "쓰기"는 ADMIN(오너)만 (POST/PUT/DELETE)가 여기로 온다
                         .requestMatchers("/api/owner-reviews/**").hasRole("ADMIN")
-                        // 회원가입은 누구나
+                        // 회원가입은 누구나, 이메일 인증 링크는 누구나(로그인 안 한 상태)
                         .requestMatchers(HttpMethod.POST, "/api/users/signup").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/verify").permitAll()
                         // 글 조회는 누구나
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                         // 그 외 모든 요청은 로그인(인증)해야 함

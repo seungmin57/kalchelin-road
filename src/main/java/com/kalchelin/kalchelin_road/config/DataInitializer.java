@@ -21,6 +21,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
         // 이미 있으면 다시 만들지 않음 (나중에 MySQL로 옮겨도 안전하게)
         if (userRepository.findByUsername("owner").isPresent()) {
             return;
@@ -29,6 +30,8 @@ public class DataInitializer implements CommandLineRunner {
         User owner = new User("owner", passwordEncoder.encode("owner1234"), Role.ADMIN, "owner@kalchelin.com");
         userRepository.save(owner);
         System.out.println("오너 계정 생성 완료: owner / owner1234");
+
     }
+
 
 }

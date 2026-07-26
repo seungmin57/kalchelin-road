@@ -30,11 +30,18 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private boolean emailVerified = false; // 가입 시엔 미인증
+
     public User(String username, String password, Role role, String email) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.email = email;
+    }
+
+    public void verifyEmail() {
+        this.emailVerified = true;
     }
 
 }
