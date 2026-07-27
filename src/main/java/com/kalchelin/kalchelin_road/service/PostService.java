@@ -2,6 +2,7 @@ package com.kalchelin.kalchelin_road.service;
 
 import com.kalchelin.kalchelin_road.entity.Post;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.exception.EmailNotVerifiedException;
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.PostRepository;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,6 +22,9 @@ public class PostService {
 
     // 글 작성 - author는 컨트롤러가 세션에서 꺼내 넘겨준다
     public Post create(String title, String content, User author, Double rating) {
+        if (!author.isEmailVerified()) {
+            throw new EmailNotVerifiedException("이메일 인증 후 글을 작성할 수 있습니다.");
+        }
         Post post = new Post(title, content, author, rating);
         return postRepository.save(post);
     }

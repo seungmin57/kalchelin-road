@@ -104,7 +104,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // 9. 그 외 예상 못 한 모든 예외 -> 500
+    // 9. 이메일 미인증 상태로 글/댓글 작성 시도 -> 403
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ResponseEntity<ErrorResponse> handleEmailNotVerified(EmailNotVerifiedException e) {
+        log.warn("미인증 유저의 쓰기 시도: {}", e.getMessage());
+        ErrorResponse body = new ErrorResponse(HttpStatus.FORBIDDEN.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    // 10. 그 외 예상 못 한 모든 예외 -> 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
         log.error("처리되지 않은 예외", e);

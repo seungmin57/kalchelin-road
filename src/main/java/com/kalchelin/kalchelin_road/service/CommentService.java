@@ -3,6 +3,7 @@ package com.kalchelin.kalchelin_road.service;
 import com.kalchelin.kalchelin_road.entity.Comment;
 import com.kalchelin.kalchelin_road.entity.Post;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.exception.EmailNotVerifiedException;
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.CommentRepository;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class CommentService {
 
     // 댓글 작성
     public Comment create(Long postId, String content, User author) {
+        if (!author.isEmailVerified()) {
+            throw new EmailNotVerifiedException("이메일 인증 후 댓글을 작성할 수 있습니다.");
+        }
         Post post = postService.findById(postId);   // 글이 있는지 확인(없으면 예외)
         Comment comment = new Comment(content, post, author);
         return commentRepository.save(comment);
