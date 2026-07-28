@@ -33,6 +33,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/verify").permitAll()
                         // 글 조회는 누구나
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                        // 비밀번호 재설정
+                        .requestMatchers(HttpMethod.POST, "/api/users/password-reset").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/reset-password").permitAll()
                         // 그 외 모든 요청은 로그인(인증)해야 함
                         .anyRequest().authenticated()
                 )

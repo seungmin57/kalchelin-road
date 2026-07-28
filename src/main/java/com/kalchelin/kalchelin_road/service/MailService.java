@@ -47,4 +47,19 @@ public class MailService {
     }
 
 
+    // 비밀번호 재설정 메일 발송
+    public void sendPasswordResetMail(String to, String token) {
+        String link = baseUrl + "/api/users/reset-password?token" + token;
+        String text = """
+                비밀번호 재설정 요청이 접수되었습니다.
+                
+                아래 링크에서 새 비밀번호를 설정해주세요.
+                %s
+                
+                이 링크는 30분간 유효합니다.
+                본인이 요청하지 않았다면 이 메일을 무시하세요.
+                """.formatted(link);
+        send(to, "[칼슐랭로드] 비밀번호 재설정", text);
+    }
+
 }

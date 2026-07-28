@@ -1,6 +1,8 @@
 package com.kalchelin.kalchelin_road.controller;
 
 
+import com.kalchelin.kalchelin_road.dto.PasswordResetConfirm;
+import com.kalchelin.kalchelin_road.dto.PasswordResetRequest;
 import com.kalchelin.kalchelin_road.dto.SignupRequest;
 import com.kalchelin.kalchelin_road.dto.UserResponse;
 import com.kalchelin.kalchelin_road.entity.User;
@@ -28,8 +30,22 @@ public class UserController {
 
     // 이메일 인증: GET /api/users/verify?token=xxx
     @GetMapping("/verify")
-    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         userService.verifyEmail(token);
         return ResponseEntity.ok("이메일 인증이 완료되었습니다. 로그인해주세요");
+    }
+
+    // 비밀번호 재설정 요청: POST /api/users/password-reset
+    @PostMapping("/password-reset")
+    public ResponseEntity<String> requestPasswordReset(@Valid @RequestBody PasswordResetRequest request) {
+        userService.requestPasswordReset(request.getEmail());
+        return ResponseEntity.ok("입력하신 이메일로 재설정 링크를 보냈습니다.");
+    }
+
+    // 실제 재설정: POST /api/users/reset-password
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> confirmPasswordReset(@Valid @RequestBody PasswordResetConfirm request) {
+        userService.confirmPasswordReset(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok("비밀번호가 변경되었습니다. 새 비밀번호로 로그인해주세요.");
     }
 }

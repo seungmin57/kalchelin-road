@@ -1,12 +1,14 @@
 package com.kalchelin.kalchelin_road.service;
 
 import com.kalchelin.kalchelin_road.entity.EmailVerificationToken;
+import com.kalchelin.kalchelin_road.entity.PasswordResetToken;
 import com.kalchelin.kalchelin_road.entity.Role;
 import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.exception.DuplicateEmailException;
 import com.kalchelin.kalchelin_road.exception.DuplicateUsernameException;
 import com.kalchelin.kalchelin_road.exception.InvalidTokenException;
 import com.kalchelin.kalchelin_road.repository.EmailVerificationTokenRepository;
+import com.kalchelin.kalchelin_road.repository.PasswordResetTokenRepository;
 import com.kalchelin.kalchelin_road.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,13 +24,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;      // @Bean으로 등록한 해싱 도구
     private final EmailVerificationTokenRepository tokenRepository;
     private final MailService mailService;
+    private final PasswordResetTokenRepository resetTokenRepository;
 
     // 생성자 주입: Repository와 PasswordEncoder 둘 다 Spring이 넣어줌
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailVerificationTokenRepository tokenRepository, MailService mailService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailVerificationTokenRepository tokenRepository, MailService mailService, PasswordResetTokenRepository resetTokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
         this.mailService = mailService;
+        this.resetTokenRepository = resetTokenRepository;
     }
 
     // 회원가입: 아이디 중복 확인 -> 비밀번호 해싱 -> 저장
@@ -75,5 +79,35 @@ public class UserService {
         user.verifyEmail();
         tokenRepository.delete(found);      // 일회용 - 쓰고 나면 삭제
         // verifyEmail 맨 끝에 임시로
+    }
+
+    // 비밀번호 재설정 요청
+    @Transactional
+    public void requestPasswordReset(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            // 기존 토큰 정리 (재요청 대비)
+            resetTokenRepository.deleteByUser(user);
+
+            String token = UUID.randomUUID().toString();
+            PasswordResetToken resetToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(30));
+            resetTokenRepository.save(resetToken);
+            mailService.sendPasswordResetMail(email, token);
+        });
+        // 이메일이 없어도 아무 일 없이 조용히 끝냄
+    }
+
+    // 비밀번호 재설정
+    @Transactional
+    public void confirmPasswordReset(String token, String newPassword) {
+        PasswordResetToken found = resetTokenRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidTokenException("유효하지 않은 링크입니다."));
+        if (found.isExpired()) {
+            throw new InvalidTokenException("만료된 링크입니다. 다시 요청해주세요");
+        }
+
+        User user = found.getUser();
+        String encoded = passwordEncoder.encode(newPassword);   // 새 비번도 해싱
+        user.changePassword(encoded);           // 엔티티 메서드로 변경
+        resetTokenRepository.delete(found);     // 일회용
     }
 }

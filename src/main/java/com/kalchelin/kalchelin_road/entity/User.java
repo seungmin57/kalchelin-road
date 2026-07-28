@@ -43,5 +43,8 @@ public class User {
     public void verifyEmail() {
         this.emailVerified = true;
     }
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 
 }
