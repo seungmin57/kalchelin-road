@@ -112,6 +112,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    // 10. 비밀번호 재확인 실패 -> 401
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException e) {
+        log.warn("비밀번호 불일치: {}", e.getMessage());
+        ErrorResponse body = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
     // 10. 그 외 예상 못 한 모든 예외 -> 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {

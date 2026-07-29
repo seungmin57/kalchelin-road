@@ -1,14 +1,13 @@
 package com.kalchelin.kalchelin_road.controller;
 
 
-import com.kalchelin.kalchelin_road.dto.PasswordResetConfirm;
-import com.kalchelin.kalchelin_road.dto.PasswordResetRequest;
-import com.kalchelin.kalchelin_road.dto.SignupRequest;
-import com.kalchelin.kalchelin_road.dto.UserResponse;
+import com.kalchelin.kalchelin_road.dto.*;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.service.CustomUserDetails;
 import com.kalchelin.kalchelin_road.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,5 +46,13 @@ public class UserController {
     public ResponseEntity<String> confirmPasswordReset(@Valid @RequestBody PasswordResetConfirm request) {
         userService.confirmPasswordReset(request.getToken(), request.getNewPassword());
         return ResponseEntity.ok("비밀번호가 변경되었습니다. 새 비밀번호로 로그인해주세요.");
+    }
+
+    // 회원 탈퇴: DELETE /api/users/me
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> withdraw(@Valid @RequestBody WithdrawRequest request,
+                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.withdraw(userDetails.getUser(), request.getPassword());
+        return ResponseEntity.noContent().build();      // 204
     }
 }

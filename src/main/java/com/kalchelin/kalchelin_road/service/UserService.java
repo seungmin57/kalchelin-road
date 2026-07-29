@@ -4,9 +4,7 @@ import com.kalchelin.kalchelin_road.entity.EmailVerificationToken;
 import com.kalchelin.kalchelin_road.entity.PasswordResetToken;
 import com.kalchelin.kalchelin_road.entity.Role;
 import com.kalchelin.kalchelin_road.entity.User;
-import com.kalchelin.kalchelin_road.exception.DuplicateEmailException;
-import com.kalchelin.kalchelin_road.exception.DuplicateUsernameException;
-import com.kalchelin.kalchelin_road.exception.InvalidTokenException;
+import com.kalchelin.kalchelin_road.exception.*;
 import com.kalchelin.kalchelin_road.repository.EmailVerificationTokenRepository;
 import com.kalchelin.kalchelin_road.repository.PasswordResetTokenRepository;
 import com.kalchelin.kalchelin_road.repository.UserRepository;
@@ -109,5 +107,17 @@ public class UserService {
         String encoded = passwordEncoder.encode(newPassword);   // 새 비번도 해싱
         user.changePassword(encoded);           // 엔티티 메서드로 변경
         resetTokenRepository.delete(found);     // 일회용
+    }
+
+    // 탈퇴
+    @Transactional
+    public void withdraw(User sessionUser, String rawPassword) {
+        User user = userRepository.findById(sessionUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+        // 비밀번호 재확인
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
+        }
+        user.withdraw();    // deleted = true, deletedAt 기록
     }
 }

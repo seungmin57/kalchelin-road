@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import com.kalchelin.kalchelin_road.entity.Role;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -33,6 +35,12 @@ public class User {
     @Column(nullable = false)
     private boolean emailVerified = false; // 가입 시엔 미인증
 
+    @Column(nullable = false)
+    private boolean deleted = false;    // 탈퇴 여부
+
+    private LocalDateTime deletedAt;    // 탈퇴 시각 (나중에 파기 배치용)
+
+
     public User(String username, String password, Role role, String email) {
         this.username = username;
         this.password = password;
@@ -43,8 +51,17 @@ public class User {
     public void verifyEmail() {
         this.emailVerified = true;
     }
+
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+
+
+    // 탈퇴 처리
+    public void withdraw() {
+        this.deleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 
 }

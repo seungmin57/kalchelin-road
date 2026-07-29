@@ -24,6 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 // 없으면 Security가 약속한 예외 -> 로그인 실패로 이어짐
                     .orElseThrow(() -> new UsernameNotFoundException("없는 아이디: " + username));
 
+
+        if (user.isDeleted()) {
+            throw new UsernameNotFoundException("탈퇴한 계정입니다.");  // 로그인 차단
+        }
         // 찾은 User를 UserDetails 규격으로 감싸 반환
         return new CustomUserDetails(user);
     }
