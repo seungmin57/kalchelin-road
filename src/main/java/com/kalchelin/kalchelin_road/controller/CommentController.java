@@ -22,7 +22,7 @@ public class CommentController {
     // 댓글 작성: POST  /api/posts/1/comments
     @PostMapping
     public CommentResponse create(
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             @Valid @RequestBody CommentRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
             ) {
@@ -32,13 +32,13 @@ public class CommentController {
 
     // 댓글 목록: GET   /api/posts/1/comments
     @GetMapping
-    public List<CommentResponse> findByPost(@PathVariable Long postId) {
+    public List<CommentResponse> findByPost(@PathVariable("postId") Long postId) {
         return commentService.findByPost(postId).stream().map(CommentResponse::new).toList();
     }
 
     // 댓글 삭제: DELETE    /api/posts/1/comments/5
     @DeleteMapping("/{commentId}")
-    public void delete(@PathVariable Long commentId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public void delete(@PathVariable("commentId") Long commentId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         commentService.delete(commentId, userDetails.getUser());
     }
 }

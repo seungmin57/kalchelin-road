@@ -39,7 +39,7 @@ public class OwnerReviewController {
 
     // [상세 조회] GET  /api/owner-reviews/id
     @GetMapping("/{id}")     // 주소 끝의 {id} 자리에 들어온 값을 받겠다는 뜻
-    public OwnerReviewResponse getReview(@PathVariable Long id) {
+    public OwnerReviewResponse getReview(@PathVariable("id") Long id) {
         // @PathVariable = 주소에 있는 {id} 값을 꺼내서 이 매개변수 id에 담아라
         OwnerReview review = ownerReviewService.getReview(id);
         return new OwnerReviewResponse(review);
@@ -47,7 +47,7 @@ public class OwnerReviewController {
 
     // [수정] PUT /api/owner-reviews/id
     @PutMapping("/{id}")    // PUT = 기존 것을 수정할 때 쓰는 요청 방식
-    public OwnerReviewResponse updateReview(@PathVariable Long id,@Valid @RequestBody OwnerReviewRequest request) {
+    public OwnerReviewResponse updateReview(@PathVariable("id") Long id,@Valid @RequestBody OwnerReviewRequest request) {
         // 주소에서 id를 꺼내고(@PathVariable), 바꿀 내용은 본문 JSON에서 꺼냄(@RequestBody)
         OwnerReview review = ownerReviewService.updateReview(id, request.getTitle(), request.getContent(), request.getRating());
         return new OwnerReviewResponse(review);
@@ -55,14 +55,14 @@ public class OwnerReviewController {
 
     // [삭제] DELETE /api/owner-reviews/id
     @DeleteMapping("/{id}")     // DELETE = 삭제할 때 쓰는 요청 방식
-    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReview(@PathVariable("id") Long id) {
         ownerReviewService.deleteReview(id);
         return ResponseEntity.noContent().build();  //204
     }
 
     // [이미지 업로드] POST /api/owner-reviews/{id}/image
     @PostMapping("/{id}/image")     //특정 평가(id) 밑의 image라는 하위 주소로 POST
-    public OwnerReviewResponse uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
+    public OwnerReviewResponse uploadImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile image) {
         // @PathVariable = 주소의 {id} 값을 꺼냄 / @RequestParam('image') = form-data의 image부분(파일)을 꺼냄
         OwnerReview review = ownerReviewService.updateImage(id, image);
         return new OwnerReviewResponse(review);

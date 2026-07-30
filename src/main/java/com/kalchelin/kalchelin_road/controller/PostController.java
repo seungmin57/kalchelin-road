@@ -41,7 +41,7 @@ public class PostController {
 
     // 상세 조회: GET /api/posts/{id} (누구나)
     @GetMapping("/{id}")
-    public PostResponse findOne(@PathVariable Long id) {
+    public PostResponse findOne(@PathVariable("id") Long id) {
         Post post = postService.findById(id);
         return new PostResponse(post);
     }
@@ -49,7 +49,7 @@ public class PostController {
     // 수정: PUT /api/posts/{id}  (본인만)
     @PutMapping("/{id}")
     public PostResponse update(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody PostRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -59,7 +59,7 @@ public class PostController {
 
     // 삭제: DELETE /api/posts/{id}  (본인만)
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public void delete(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
         postService.delete(id, userDetails.getUser());
     }
 }
