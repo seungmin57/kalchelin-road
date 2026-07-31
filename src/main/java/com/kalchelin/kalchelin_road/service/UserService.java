@@ -113,7 +113,7 @@ public class UserService {
     @Transactional
     public void withdraw(User sessionUser, String rawPassword) {
         User user = userRepository.findById(sessionUser.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+              .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
         // 비밀번호 재확인
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
