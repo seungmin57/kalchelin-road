@@ -47,4 +47,34 @@ class PostControllerTest {
                 .with(user(new CustomUserDetails(인증된_유저("reader")))))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void 로그인한_유저가_글을_쓰면_201() throws Exception {
+        mockMvc.perform(post("/api/posts")
+                .with(user(new CustomUserDetails(인증된_유저("writer"))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"title":"제목","content":"내용","rating":4.5}
+                        """))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void 빈_제목으로_글을_쓰면_400() throws Exception {
+        mockMvc.perform(post("/api/posts")
+                .with(user(new CustomUserDetails(인증된_유저("writer2"))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                            {"title":"","content":"내용","rating":4.5}
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors").exists());
+    }
+
+    @Test
+    void 글_목록은_비로그인도_조회된다() throws Exception {
+        mockMvc.perform(get("/api/posts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
 }
