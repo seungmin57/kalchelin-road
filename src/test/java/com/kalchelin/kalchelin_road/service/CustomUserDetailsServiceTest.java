@@ -16,7 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-public class CustomUserDetailsServiceTest {
+class CustomUserDetailsServiceTest {
     @Autowired private CustomUserDetailsService userDetailsService;
     @Autowired private UserRepository userRepository;
     @Autowired private PasswordEncoder passwordEncoder;

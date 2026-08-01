@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest     // 진짜 스프링 앱을 띄운다 (빈 주입, DB 연결 전부 실제)
 @Transactional      // 각 테스트가 끝나면 자동 롤백 -> DB에 아무것도 안 남는다
-public class UserServiceTest {
+class UserServiceTest {
 
     // 평소 생성자 주입을 쓰지만, 테스트는 우리가 new 하는 게 아니라
     // JUnit이 인스턴스를 만들기 때문에 필드 주입(@Autowired)을 쓴다
