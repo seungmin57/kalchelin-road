@@ -47,6 +47,11 @@ public class SecurityConfig {
                         .successHandler((req, res, auth) -> res.setStatus(200))     // 성공 -> 200
                         .failureHandler((req, res, ex)   -> res.setStatus(401))     // 실패 -> 401
                         .permitAll()        // 로그인 주소 자체는 누구나 접근 가능해야 함
+                )
+
+                // (3) 인증 안 된 요청이 보호된 주소에 오면
+                //     로그인 페이지로 리다이렉트(302)하지 말고 401만 반환 (REST용)
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, authEx) -> res.setStatus(401))
                 );
 
         return http.build();    // 위에서 정한 규칙으로 문지기를 완성해서 등록
