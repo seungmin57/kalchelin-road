@@ -20,6 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> {})
                 // (1) 지금은 REST API라 CSRF 보호를 끔 (아래 설명)
                 .csrf(csrf -> csrf.disable())
                 // (2) 주소별 접근 규칙
