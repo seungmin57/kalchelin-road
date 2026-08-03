@@ -27,6 +27,7 @@ public class User {
     private String password;    // 비밀번호 (나중에 암호화해서 저장)
 
     @Enumerated(EnumType.STRING)    // enum을 글자 그대로 DB에 저장
+    @Column(nullable = false)
     private Role role;      // 권한 (오너인지 일반 회원인지)
 
     @Column(nullable = false, unique = true)

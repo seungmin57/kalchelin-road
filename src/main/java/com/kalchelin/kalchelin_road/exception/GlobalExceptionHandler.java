@@ -1,6 +1,7 @@
 package com.kalchelin.kalchelin_road.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -120,7 +121,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
-    // 10. 그 외 예상 못 한 모든 예외 -> 500
+    // 11. DB 제약 위반(동일 아이디 동시 요청) -> 409
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse>  handleDataIntegrity(DataIntegrityViolationException e) {
+        log.warn("DB 제약 위반: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(409, "이미 사용 중인 값입니다."));
+    }
+
+    // 12. 그 외 예상 못 한 모든 예외 -> 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
         log.error("처리되지 않은 예외", e);
