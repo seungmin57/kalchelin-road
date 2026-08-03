@@ -95,17 +95,5 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.content[0].authorName").value("탈퇴한 사용자"));
     }
 
-    @Test
-    void 탈퇴한_유저의_글은_작성자가_가려진다() throws Exception {
-        // Given: 글을 쓰고 탈퇴한 유저
-        User author = 인증된_유저("goodbye");
-        postRepository.save(new Post("제목", "내용", author, 4.5));
-        author.withdraw();
-        userRepository.save(author);
 
-        // When & Then
-        mockMvc.perform(get("/api/posts"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].authorName").value("탈퇴한 사용자"));
-    }
 }

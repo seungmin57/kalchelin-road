@@ -47,6 +47,7 @@ public class PostServiceQueryCountTest {
         postService.findAll(PageRequest.of(0,10)).map(PostResponse::new);
 
         // Then: @EntityGraph 덕분에 1번이어야 한다
+        // 페이지 크기를 줄이면 count가 추가되어 2가 된다.
         assertThat(stats.getPrepareStatementCount()).isEqualTo(1);
     }
 }
