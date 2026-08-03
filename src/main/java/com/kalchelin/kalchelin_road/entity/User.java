@@ -40,7 +40,6 @@ public class User {
 
     private LocalDateTime deletedAt;    // 탈퇴 시각 (나중에 파기 배치용)
 
-
     public User(String username, String password, Role role, String email) {
         this.username = username;
         this.password = password;
@@ -56,12 +55,16 @@ public class User {
         this.password = encodedPassword;
     }
 
-
-
     // 탈퇴 처리
     public void withdraw() {
         this.deleted = true;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    // 남에게 보여줄 이름. 탈퇴한 계정은 아이디를 가린다
+    // getUsername()은 로그인, 본인 확인용
+    public String getDisplayName() {
+        return deleted ? "탈퇴한 사용자" : username;
     }
 
 }
