@@ -38,7 +38,8 @@ class PostControllerTest {
     void 비로그인_상태로_글을_쓰면_401() throws Exception {
         mockMvc.perform(post("/api/posts").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"title\":\"제목\",\"content\":\"내용\",\"rating\":4.5}"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
