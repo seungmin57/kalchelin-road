@@ -1,5 +1,6 @@
 package com.kalchelin.kalchelin_road.controller;
 
+import com.kalchelin.kalchelin_road.dto.PageResponse;
 import com.kalchelin.kalchelin_road.dto.PostRequest;
 import com.kalchelin.kalchelin_road.dto.PostResponse;
 import com.kalchelin.kalchelin_road.entity.Post;
@@ -7,6 +8,10 @@ import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.service.CustomUserDetails;
 import com.kalchelin.kalchelin_road.service.PostService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,10 +39,10 @@ public class PostController {
 
     // 목록 조회: GET /api/posts (누구나)
     @GetMapping
-    public List<PostResponse> findAll() {
-        return postService.findAll().stream()
-                .map(PostResponse::new)     // Post 하나하나를 PostResponse로
-                .toList();
+    public PageResponse<PostResponse> findAll(
+            @PageableDefault(size=10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        return new PageResponse<>(postService.findAll(pageable).map(PostResponse::new));
     }
 
 
