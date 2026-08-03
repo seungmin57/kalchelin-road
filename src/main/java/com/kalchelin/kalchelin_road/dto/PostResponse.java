@@ -19,7 +19,7 @@ public class PostResponse {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.authorName = post.getAuthor().getUsername();   // 여기서 프록시가 실제 조회됨
+        this.authorName = post.getAuthor().getDisplayName();   // 여기서 프록시가 실제 조회됨
         this.rating = post.getRating();
         this.createdAt = post.getCreatedAt();
     }
