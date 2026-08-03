@@ -12,6 +12,7 @@ import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,9 +44,10 @@ public class PostServiceQueryCountTest {
         stats.clear();
 
         // When: 목록 조회 + DTO 변환(여기서 프록시가 열린다)
-        postService.findAll().stream().map(PostResponse::new).toList();
+        postService.findAll(PageRequest.of(0,10)).map(PostResponse::new);
 
         // Then: @EntityGraph 덕분에 1번이어야 한다
+        // 페이지 크기를 줄이면 count가 추가되어 2가 된다.
         assertThat(stats.getPrepareStatementCount()).isEqualTo(1);
     }
 }

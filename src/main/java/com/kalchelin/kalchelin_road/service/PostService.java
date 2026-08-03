@@ -5,6 +5,8 @@ import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.exception.EmailNotVerifiedException;
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +32,8 @@ public class PostService {
     }
 
     // 목록 조회
-    public List<Post> findAll() {
-        return postRepository.findAll();
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 
     // 상세 조회
