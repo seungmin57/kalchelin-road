@@ -3,6 +3,7 @@ package com.kalchelin.kalchelin_road.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kalchelin.kalchelin_road.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;         // @Bean 어노테이션
 import org.springframework.context.annotation.Configuration;    // @Configuration 어노테이션
 import org.springframework.http.HttpMethod;
@@ -38,6 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 // (2) 주소별 접근 규칙
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
                         // 오너 평가 "조회(GET)"는 누구나 허용
                         .requestMatchers(HttpMethod.GET, "/api/owner-reviews/**").permitAll()
                         // 오너 평가 "쓰기"는 ADMIN(오너)만 (POST/PUT/DELETE)가 여기로 온다
@@ -53,6 +55,7 @@ public class SecurityConfig {
                         // 그 외 모든 요청은 로그인(인증)해야 함
                         .anyRequest().authenticated()
                 )
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/login")   // 여기로 POST하면 로그인

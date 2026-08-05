@@ -5,6 +5,7 @@ import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.exception.EmailNotVerifiedException;
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.PostRepository;
+import com.kalchelin.kalchelin_road.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,13 +18,19 @@ import java.util.List;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     // 글 작성 - author는 컨트롤러가 세션에서 꺼내 넘겨준다
-    public Post create(String title, String content, User author, Double rating) {
+    public Post create(String title, String content, User sessionUser, Double rating) {
+        // 세션 User는 로그인 순간의 스냅샷. 인증 여부는 DB의 현재 값으로 판단한다
+        User author = userRepository.findById(sessionUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+
         if (!author.isEmailVerified()) {
             throw new EmailNotVerifiedException("이메일 인증 후 글을 작성할 수 있습니다.");
         }
