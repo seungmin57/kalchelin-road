@@ -52,6 +52,8 @@ public class SecurityConfig {
                         // 비밀번호 재설정
                         .requestMatchers(HttpMethod.POST, "/api/users/password-reset").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/reset-password").permitAll()
+                        // swagger (화면, 명세 JSON)
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 그 외 모든 요청은 로그인(인증)해야 함
                         .anyRequest().authenticated()
                 )
