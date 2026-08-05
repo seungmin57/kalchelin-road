@@ -6,6 +6,7 @@ import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.exception.EmailNotVerifiedException;
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.CommentRepository;
+import com.kalchelin.kalchelin_road.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -15,14 +16,19 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;      // 글이 존재하는지 확인하려고 재사용
+    private final UserRepository userRepository;
 
-    public CommentService(CommentRepository commentRepository, PostService postService) {
+    public CommentService(CommentRepository commentRepository, PostService postService, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.postService = postService;
+        this.userRepository = userRepository;
     }
 
     // 댓글 작성
-    public Comment create(Long postId, String content, User author) {
+    public Comment create(Long postId, String content, User sessionUser) {
+        User author = userRepository.findById(sessionUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+
         if (!author.isEmailVerified()) {
             throw new EmailNotVerifiedException("이메일 인증 후 댓글을 작성할 수 있습니다.");
         }
