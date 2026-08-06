@@ -58,7 +58,7 @@ public class OwnerReviewService {
     public OwnerReview updateImage(Long id, MultipartFile file) {
         OwnerReview review = getReview(id);                     // 1. 평가 찾기
         String imagePath = fileStorageService.store(file);      // 2. 파일 저장 - 경로를 받음
-        review.setImageUrl(imagePath);                          // 3. 그 경로를 평가에 기록
+        review.attachImage(imagePath);                          // 3. 그 경로를 평가에 기록
         return ownerReviewRepository.save(review);              // 4. 바뀐 평가 저장
 
     }

@@ -43,7 +43,7 @@ public class OwnerReview {
     }
 
     // 이미지 경로를 설정하는 메서드 (파일 저장 후 경로가 정해지면 호출)
-    public void setImageUrl(String imageUrl) {
+    public void attachImage(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
