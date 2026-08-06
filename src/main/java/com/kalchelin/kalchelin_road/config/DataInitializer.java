@@ -28,6 +28,7 @@ public class DataInitializer implements CommandLineRunner {
         }
         // 오너 계정 생성 - 비밀번호는 반드시 해싱해서 저장 (회원가입과 동일)
         User owner = new User("owner", passwordEncoder.encode("owner1234"), Role.ADMIN, "owner@kalchelin.com");
+        owner.verifyEmail();
         userRepository.save(owner);
         System.out.println("오너 계정 생성 완료: owner / owner1234");
 
