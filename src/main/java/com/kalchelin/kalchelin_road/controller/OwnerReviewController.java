@@ -2,9 +2,13 @@ package com.kalchelin.kalchelin_road.controller;
 
 import com.kalchelin.kalchelin_road.dto.OwnerReviewRequest; // 데이터 요청 그릇 가져오기
 import com.kalchelin.kalchelin_road.dto.OwnerReviewResponse;
+import com.kalchelin.kalchelin_road.dto.PageResponse;
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     // 돌려줄 데이터(엔티티) 가져오기
 import com.kalchelin.kalchelin_road.service.OwnerReviewService;  // 일을 시킬 대상(서비스) 가져오기
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +26,14 @@ public class OwnerReviewController {
     }
 
     @GetMapping     // GET 요청이 이 주소(/api/owner-reviews)로 오면 아래 기능을 실행해라
-    public List<OwnerReviewResponse> getAllReviews() {
-        return ownerReviewService.getAllReviews().stream().map(OwnerReviewResponse::new) // 각 엔티티를 DTO로
-                                                          .toList();
+    public PageResponse<OwnerReviewResponse> getAllReviews(
+        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+        Pageable pageable) {
+        return new PageResponse<>(
+                ownerReviewService.getAllReviews(pageable).map(OwnerReviewResponse::new)
+        );
     }
+
 
     @PostMapping    // POST 요청이 이 주소로 오면 아래 메서드 실행
     public ResponseEntity<OwnerReviewResponse> createReview(@Valid @RequestBody OwnerReviewRequest request) {
