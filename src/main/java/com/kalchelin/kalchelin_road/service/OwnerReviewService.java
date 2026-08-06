@@ -3,6 +3,8 @@ package com.kalchelin.kalchelin_road.service;
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     //다룰 데이터(엔티티) 가져오기
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.OwnerReviewRepository;        //DB 접근 도구(리포지토리) 가져오기
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;        //@Service 어노테이션 가져오기
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,8 +30,8 @@ public class OwnerReviewService {
     }
 
     // [기능 2] 전체 평가 목록 조회하기
-    public List<OwnerReview> getAllReviews() {
-        return ownerReviewRepository.findAll();     // 리포지토리로 DB의 모든 평가를 가져와 목록으로 돌려줌
+    public Page<OwnerReview> getAllReviews(Pageable pageable) {
+        return ownerReviewRepository.findAll(pageable);     // 리포지토리로 DB의 모든 평가를 가져와 목록으로 돌려줌
     }
 
     // [기능 3] 상세 조회 - id로 평가 하나 찾기

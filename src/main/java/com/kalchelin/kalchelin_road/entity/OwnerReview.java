@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -25,10 +27,13 @@ public class OwnerReview {
     @Column(nullable = true)    // 이미지가 없는 평가도 허용
     private String imageUrl;    // 저장된 이미지의 경로를 담는 자리(예: "uploads/abc.jpg")
 
+    private LocalDateTime createdAt;
+
     public OwnerReview(String title, String content, double rating) {
         this.title = title;
         this.content = content;
         this.rating = rating;
+        this.createdAt = LocalDateTime.now();
     }
 
     public void update(String title, String content, double rating) {
