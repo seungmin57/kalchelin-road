@@ -38,3 +38,6 @@ out/
 
 ### 민감정보 ###
 application-local.properties
+
+### 업로드 파일 ###
+uploads/
