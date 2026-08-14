@@ -17,6 +17,7 @@ public class FileStorageService {
     // application.properties의 file.upload-dir 값(uploads)을 이 변수에 가져옴
     @Value("${file.upload-dir}")
     private String uploadDir;
+    private static final String URL_PREFIX = "/uploads/";
 
     // 허용 확장자 (소문자로 비교)
     private static final List<String> ALLOWED_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp");
@@ -44,7 +45,7 @@ public class FileStorageService {
             file.transferTo(targetPath);    // 파일을 그 경로에 저장
 
             // 4) 저장된 경로를 문자열로 돌려준다(추후 DB에 저장)
-            return uploadDir + "/" + savedName;
+            return URL_PREFIX + savedName;
         } catch (IOException e) {
             throw new RuntimeException("파일 저장에 실패했습니다.", e);
         }
