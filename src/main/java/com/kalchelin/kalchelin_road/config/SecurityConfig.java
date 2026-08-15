@@ -1,7 +1,11 @@
 package com.kalchelin.kalchelin_road.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kalchelin.kalchelin_road.dto.UserResponse;
+import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.exception.ErrorResponse;
+import com.kalchelin.kalchelin_road.service.CustomUserDetails;
+import com.kalchelin.kalchelin_road.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;         // @Bean 어노테이션
@@ -19,15 +23,11 @@ import java.io.IOException;
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
+    private final UserService userService;
 
-    public SecurityConfig(ObjectMapper objectMapper) {
+    public SecurityConfig(ObjectMapper objectMapper, UserService userService) {
         this.objectMapper = objectMapper;
-    }
-
-    // 비밀번호 해싱 도구(PasswordEncoder)를 Spring 창고에 등록
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();     // BCrypt 방식으로 해싱하는 도구를 만들어 등록
+        this.userService = userService;
     }
 
     // 요청을 검사하는 문지기의 규칙표를 등록
@@ -65,7 +65,14 @@ public class SecurityConfig {
                         .loginProcessingUrl("/api/login")   // 여기로 POST하면 로그인
 
                         // REST 스타일: 성공/실패 시 페이지 이동 대신 상태코드만 반환
-                        .successHandler((req, res, auth) -> res.setStatus(200))     // 성공 -> 200
+                        .successHandler((req, res, auth) -> {
+                            CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+                            User user = userService.findById(principal.getUser().getId());
+
+                            res.setStatus(200);     // 성공 -> 200
+                            res.setContentType("application/json;charset=UTF-8");
+                            objectMapper.writeValue(res.getWriter(), new UserResponse(user));
+                        })
                         .failureHandler((req, res, ex)   -> writeError(res, 401, "아이디 또는 비밀번호가 올바르지 않습니다."))     // 실패 -> 401
                         .permitAll()        // 로그인 주소 자체는 누구나 접근 가능해야 함
                 )

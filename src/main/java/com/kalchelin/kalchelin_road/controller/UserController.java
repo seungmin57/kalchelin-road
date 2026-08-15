@@ -55,4 +55,15 @@ public class UserController {
         userService.withdraw(userDetails.getUser(), request.getPassword());
         return ResponseEntity.noContent().build();      // 204
     }
+
+    // 새로 고침 경우
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+
+        // 세션 User는 로그인 시점 스냅샷 -> id만 믿고 다시 조회
+        User user = userService.findById(userDetails.getUser().getId());
+
+        return ResponseEntity.ok(new UserResponse(user));
+    }
 }

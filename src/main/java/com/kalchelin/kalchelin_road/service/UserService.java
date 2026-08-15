@@ -120,4 +120,10 @@ public class UserService {
         }
         user.withdraw();    // deleted = true, deletedAt 기록
     }
+
+    @Transactional(readOnly = true)
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다"));
+    }
 }
