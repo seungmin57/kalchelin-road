@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -40,6 +41,7 @@ class PostControllerTest {
     @Test
     void 비로그인_상태로_글을_쓰면_401() throws Exception {
         mockMvc.perform(post("/api/posts").contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
                 .content("{\"title\":\"제목\",\"content\":\"내용\",\"rating\":4.5}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").exists());
@@ -56,6 +58,7 @@ class PostControllerTest {
     void 로그인한_유저가_글을_쓰면_201() throws Exception {
         mockMvc.perform(post("/api/posts")
                 .with(user(new CustomUserDetails(인증된_유저("writer"))))
+                        .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {"title":"제목","content":"내용","rating":4.5}
@@ -67,6 +70,7 @@ class PostControllerTest {
     void 빈_제목으로_글을_쓰면_400() throws Exception {
         mockMvc.perform(post("/api/posts")
                 .with(user(new CustomUserDetails(인증된_유저("writer2"))))
+                        .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                             {"title":"","content":"내용","rating":4.5}

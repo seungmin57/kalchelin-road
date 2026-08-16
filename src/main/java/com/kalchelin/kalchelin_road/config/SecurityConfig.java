@@ -16,6 +16,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.CsrfToken;
 
 import java.io.IOException;
 
@@ -35,8 +38,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> {})
-                // (1) 지금은 REST API라 CSRF 보호를 끔 (아래 설명)
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        // 토큰을 쿠키로 내려보낸다. HttpOnly=false여야 JS가 읽을 수 있다
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        // 지연 로딩 해제 - 매 요청 토큰을 실제로 만들어 쿠키에 싣는다
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                )
                 // (2) 주소별 접근 규칙
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
@@ -66,6 +73,10 @@ public class SecurityConfig {
 
                         // REST 스타일: 성공/실패 시 페이지 이동 대신 상태코드만 반환
                         .successHandler((req, res, auth) -> {
+                            // 응답을 쓰기 전에 CSRF 토큰을 읽어 쿠키가 실리게 한다
+                            CsrfToken csrfToken = (CsrfToken) req.getAttribute(CsrfToken.class.getName());
+                            if (csrfToken != null) csrfToken.getToken();   // 이 호출이 쿠키를 심는다
+
                             CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
                             User user = userService.findById(principal.getUser().getId());
 
