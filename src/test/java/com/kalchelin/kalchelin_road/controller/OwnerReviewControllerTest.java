@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,6 +35,7 @@ class OwnerReviewControllerTest {
         // When & Then: hasRole("ADMIN") 규칙에 막혀야 한다
         mockMvc.perform(post("/api/owner-reviews")
                 .with(user(new CustomUserDetails(normal)))
+                        .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                          {"title":"제목","content":"내용","rating":4.5}
