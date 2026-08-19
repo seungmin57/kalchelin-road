@@ -39,6 +39,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> {})
                 .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(PathRequest.toH2Console())
                         // 토큰을 쿠키로 내려보낸다. HttpOnly=false여야 JS가 읽을 수 있다
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         // 지연 로딩 해제 - 매 요청 토큰을 실제로 만들어 쿠키에 싣는다
@@ -63,6 +64,9 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 이미지
                         .requestMatchers("/uploads/**").permitAll()
+                        // 식당 조회
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/**").permitAll()
+                        .requestMatchers("/api/restaurants/**").hasRole("ADMIN")
                         // 그 외 모든 요청은 로그인(인증)해야 함
                         .anyRequest().authenticated()
                 )

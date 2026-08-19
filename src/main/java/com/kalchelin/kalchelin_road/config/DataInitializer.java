@@ -1,7 +1,9 @@
 package com.kalchelin.kalchelin_road.config;
 
+import com.kalchelin.kalchelin_road.entity.Restaurant;
 import com.kalchelin.kalchelin_road.entity.Role;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.repository.RestaurantRepository;
 import com.kalchelin.kalchelin_road.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +15,12 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;      // 여기서도 해싱해서 저장
+    private final RestaurantRepository restaurantRepository;
 
-    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder, RestaurantRepository restaurantRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @Override
@@ -32,6 +36,17 @@ public class DataInitializer implements CommandLineRunner {
         userRepository.save(owner);
         System.out.println("오너 계정 생성 완료: owner / owner1234");
 
+        if (restaurantRepository.count() == 0) {
+            restaurantRepository.save(new Restaurant(
+                    "강릉 장칼국수 본점", "강원도 강릉시 임영로 123", "강원 강릉시 임영로 123",
+                    "강원 강릉시", 128.876100, 37.751900));
+            restaurantRepository.save(new Restaurant(
+                    "안동 국시골목 할매국시", "경상북도 안동시 서부동 45", null,
+                    "경북 안동시", 128.729400, 36.568400));
+            restaurantRepository.save(new Restaurant(
+                    "전주 베테랑 칼국수", "전라북도 전주시 완산구 고사동 88", null,
+                    "전북 전주시", 127.147800, 35.816200));
+        }
     }
 
 
