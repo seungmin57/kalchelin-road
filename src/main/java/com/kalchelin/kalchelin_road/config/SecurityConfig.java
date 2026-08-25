@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.csrf.CsrfToken;
 
@@ -94,7 +95,10 @@ public class SecurityConfig {
 
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
-                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))   // 302대신 200
+                        .logoutSuccessHandler((req, res, auth) ->
+                            res.setStatus(200)
+                        )   // 302대신 200
+
                 )
 
                 // (3) Security 필터 단계에서 막힌 요청의 응답

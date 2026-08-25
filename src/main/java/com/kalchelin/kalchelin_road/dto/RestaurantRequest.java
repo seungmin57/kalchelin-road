@@ -35,7 +35,6 @@ public class RestaurantRequest {
     @DecimalMax(value = "39.0", message = "한국 범위를 벗어난 좌표입니다")
     private Double latitude;
 
-    @Size(max = 100)
-    private String category;        // 선택
+
 
 }

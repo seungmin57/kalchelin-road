@@ -139,4 +139,12 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
+
+    @ExceptionHandler(ExternalApiException.class)
+    public ResponseEntity<ErrorResponse> handleExternalApi(ExternalApiException e) {
+        // 502 Bad Gateway - 우리가 부른 다른 서버가 문제다.
+        // 500은 "우리 코드가 터졌다"는 뜻이라 원인을 숨긴다
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(new ErrorResponse(HttpStatus.BAD_GATEWAY.value(), e.getMessage()));
+    }
 }

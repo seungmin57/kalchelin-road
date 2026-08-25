@@ -3,7 +3,9 @@ package com.kalchelin.kalchelin_road.controller;
 import com.kalchelin.kalchelin_road.dto.PageResponse;
 import com.kalchelin.kalchelin_road.dto.RestaurantRequest;
 import com.kalchelin.kalchelin_road.dto.RestaurantResponse;
+import com.kalchelin.kalchelin_road.dto.RestaurantSearchResponse;
 import com.kalchelin.kalchelin_road.entity.Restaurant;
+import com.kalchelin.kalchelin_road.service.RestaurantSearchService;
 import com.kalchelin.kalchelin_road.service.RestaurantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 
 @RestController
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
+    private final RestaurantSearchService restaurantSearchService;
 
     // 가게 직접 등록 (ADMIN 보정용). 평소엔 글 작성 시 자동 등록된다
     @PostMapping
@@ -50,5 +54,14 @@ public class RestaurantController {
     public RestaurantResponse update(@PathVariable Long id,
                                      @Valid @RequestBody RestaurantRequest request) {
         return new RestaurantResponse(restaurantService.update(id, request));
+    }
+
+    // 외부 지도 API 검색. 우리 DB 조회가 아니다
+    @GetMapping("/search")
+    public List<RestaurantSearchResponse> search(
+            @RequestParam String query,
+            @RequestParam(required = false) String region
+    ) {
+        return restaurantSearchService.search(region, query);
     }
 }
