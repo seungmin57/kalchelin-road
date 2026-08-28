@@ -36,5 +36,7 @@ public class RestaurantRequest {
     private Double latitude;
 
 
+    @Size(max = 200, message = "링크는 200자 이내여야 합니다")
+    private String kakaoPlaceUrl; // 선택
 
 }

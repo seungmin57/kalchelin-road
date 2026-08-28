@@ -12,6 +12,7 @@ public class RestaurantResponse {
     private final String region;
     private final Double longitude;
     private final Double latitude;
+    private final String kakaoPlaceUrl;
     // 평균 별점·리뷰 수는 집계 단계에서 추가
 
     public RestaurantResponse(Restaurant restaurant) {
@@ -22,5 +23,6 @@ public class RestaurantResponse {
         this.region = restaurant.getRegion();
         this.longitude = restaurant.getLongitude();
         this.latitude = restaurant.getLatitude();
+        this.kakaoPlaceUrl = restaurant.getKakaoPlaceUrl();
     }
 }

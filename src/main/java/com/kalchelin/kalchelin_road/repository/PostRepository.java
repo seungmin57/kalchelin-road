@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Override
-    @EntityGraph(attributePaths = "author")
+    @EntityGraph(attributePaths = {"author", "restaurant"})
     // 몸통은 여전히 Spring Data가 만들어주고, 우리는 "author도 같이 채워와라"만 얹는다.
     Page<Post> findAll(Pageable pageable);
+
 }

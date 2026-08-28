@@ -26,7 +26,8 @@ public class RestaurantService {
         return restaurantRepository.findByPlaceKey(placeKey)
                 .orElseGet(() -> restaurantRepository.saveAndFlush(new Restaurant(
                         request.getName(), request.getAddress(), request.getRoadAddress(),
-                        request.getRegion(), request.getLongitude(), request.getLatitude())
+                        request.getRegion(), request.getLongitude(), request.getLatitude(),
+                        request.getKakaoPlaceUrl())
                 ));
     }
 

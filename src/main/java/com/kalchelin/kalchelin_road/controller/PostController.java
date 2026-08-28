@@ -33,7 +33,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostResponse> create(@Valid @RequestBody PostRequest request,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {  // 지금 로그인한 사람
-        Post post = postService.create(request.getTitle(), request.getContent(), userDetails.getUser(), request.getRating());
+        Post post = postService.create(request.getTitle(), request.getContent(), userDetails.getUser(), request.getRating(), request.getRestaurant());
         return ResponseEntity.status(HttpStatus.CREATED).body(new PostResponse(post));      // 201
     }
 

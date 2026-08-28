@@ -38,14 +38,14 @@ public class DataInitializer implements CommandLineRunner {
 
         if (restaurantRepository.count() == 0) {
             restaurantRepository.save(new Restaurant(
-                    "강릉 장칼국수 본점", "강원도 강릉시 임영로 123", "강원 강릉시 임영로 123",
-                    "강원 강릉시", 128.876100, 37.751900));
+                    "장칼국수", "강원 강릉시 임당동 161-1", "강원 강릉시 임영로 154",
+                    "강원 강릉시", 128.891996827965, 37.7548794243008, "http://place.map.kakao.com/123964314"));
             restaurantRepository.save(new Restaurant(
-                    "안동 국시골목 할매국시", "경상북도 안동시 서부동 45", null,
-                    "경북 안동시", 128.729400, 36.568400));
+                    "다래칼국수", "서울 영등포구 양평동4가 119", "서울 영등포구 양평로 116",
+                    "서울 영등포구", 126.894932372881, 37.5375383991428, "http://place.map.kakao.com/851321600"));
             restaurantRepository.save(new Restaurant(
-                    "전주 베테랑 칼국수", "전라북도 전주시 완산구 고사동 88", null,
-                    "전북 전주시", 127.147800, 35.816200));
+                    "옛날칼국수", "서울 노원구 상계동 711-13", "서울 노원구 동일로 1417",
+                    "서울 노원구", 127.0598238649865, 37.654972752624296, "http://place.map.kakao.com/8015984"));
         }
     }
 

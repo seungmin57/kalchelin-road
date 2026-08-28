@@ -1,11 +1,15 @@
 package com.kalchelin.kalchelin_road.service;
 
+import com.kalchelin.kalchelin_road.dto.RestaurantRequest;
 import com.kalchelin.kalchelin_road.entity.OwnerReview;     //다룰 데이터(엔티티) 가져오기
+import com.kalchelin.kalchelin_road.entity.Restaurant;
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
 import com.kalchelin.kalchelin_road.repository.OwnerReviewRepository;        //DB 접근 도구(리포지토리) 가져오기
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;        //@Service 어노테이션 가져오기
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.NoSuchElementException;
@@ -13,28 +17,29 @@ import java.util.NoSuchElementException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OwnerReviewService {
     private final OwnerReviewRepository ownerReviewRepository;
     private final FileStorageService fileStorageService;    // (추가)파일 저장을 맡길 도구
+    private final RestaurantService restaurantService;
 
-    // 생성자: Spring이 리포지토리를 자동으로 만들어서 여기에 넣어준다
-    public OwnerReviewService(OwnerReviewRepository ownerReviewRepository, FileStorageService fileStorageService) {
-        this.ownerReviewRepository = ownerReviewRepository;
-        this.fileStorageService = fileStorageService;   // <- 추가
-    }
 
     // [기능 1] 새 평가 저장하기
-    public OwnerReview createReview(String title, String content, double rating) {
-        OwnerReview review = new OwnerReview(title, content, rating); // 받은 값으로 새 평가 객체 생성
+    @Transactional
+    public OwnerReview createReview(String title, String content, double rating, RestaurantRequest restaurantRequest) {
+        Restaurant restaurant = restaurantService.findOrCreate(restaurantRequest);
+        OwnerReview review = new OwnerReview(title, content, rating, restaurant); // 받은 값으로 새 평가 객체 생성
         return ownerReviewRepository.save(review);  // 리포지토리로 DB에 저장하고, 저장된 결과(id 채워진 상태)를 돌려줌
     }
 
     // [기능 2] 전체 평가 목록 조회하기
+    @Transactional
     public Page<OwnerReview> getAllReviews(Pageable pageable) {
         return ownerReviewRepository.findAll(pageable);     // 리포지토리로 DB의 모든 평가를 가져와 목록으로 돌려줌
     }
 
     // [기능 3] 상세 조회 - id로 평가 하나 찾기
+    @Transactional
     public OwnerReview getReview(Long id) {
         return ownerReviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 평가가 없습니다. id =" + id));
@@ -43,23 +48,25 @@ public class OwnerReviewService {
     }
 
     // [기능 4] 수정 - id로 찾아서 내용 바꾸기
+    @Transactional
     public OwnerReview updateReview(Long id, String title, String content, double rating) {
         OwnerReview review = getReview(id);     // 상세 조회 메서드 사용
         review.update(title, content, rating);  // 엔티티 안의 값을 수정 - 엔티티에 메서드 추가
-        return ownerReviewRepository.save(review);  // 바뀐 걸 저장
+        return review;  // 바뀐 걸 저장
     }
 
     // [기능 5] id로 평가 삭제
+    @Transactional
     public void deleteReview(Long id) {
         ownerReviewRepository.deleteById(id);       // id로 삭제
     }
 
     // [기능 6] 이미지 업로드 - id로 평가를 찾아, 파일을 저장하고 그 경로를 평가에 기록
+    @Transactional
     public OwnerReview updateImage(Long id, MultipartFile file) {
         OwnerReview review = getReview(id);                     // 1. 평가 찾기
         String imagePath = fileStorageService.store(file);      // 2. 파일 저장 - 경로를 받음
         review.attachImage(imagePath);                          // 3. 그 경로를 평가에 기록
         return ownerReviewRepository.save(review);              // 4. 바뀐 평가 저장
-
     }
 }

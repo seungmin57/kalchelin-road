@@ -2,11 +2,14 @@ package com.kalchelin.kalchelin_road.controller;
 
 
 import com.kalchelin.kalchelin_road.entity.Post;
+import com.kalchelin.kalchelin_road.entity.Restaurant;
 import com.kalchelin.kalchelin_road.entity.Role;
 import com.kalchelin.kalchelin_road.entity.User;
 import com.kalchelin.kalchelin_road.repository.PostRepository;
+import com.kalchelin.kalchelin_road.repository.RestaurantRepository;
 import com.kalchelin.kalchelin_road.repository.UserRepository;
 import com.kalchelin.kalchelin_road.service.CustomUserDetails;
+import com.kalchelin.kalchelin_road.service.RestaurantService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +33,7 @@ class PostControllerTest {
     @Autowired private UserRepository userRepository;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private PostRepository postRepository;
+    @Autowired private RestaurantRepository restaurantRepository;
 
     // 인증된 유저를 만드는 헬퍼
     private User 인증된_유저(String username) {
@@ -61,7 +65,18 @@ class PostControllerTest {
                         .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                        {"title":"제목","content":"내용","rating":4.5}
+                        {
+                            "title":"제목",
+                             "content":"내용",
+                             "rating":4.5,
+                             "restaurant":{
+                             "name":"테스트 가게",
+                             "address":"서울 강남구 역삼동 1",
+                             "region":"서울 강남구",
+                             "longitude":127.05,
+                             "latitude":37.50
+                             }
+                        }
                         """))
                 .andExpect(status().isCreated());
     }
@@ -73,7 +88,18 @@ class PostControllerTest {
                         .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                            {"title":"","content":"내용","rating":4.5}
+                            {
+                            "title":"",
+                             "content":"내용",
+                             "rating":4.5,
+                             "restaurant":{
+                             "name":"테스트 가게",
+                             "address":"서울 강남구 역삼동 1",
+                             "region":"서울 강남구",
+                             "longitude":127.05,
+                             "latitude":37.50
+                             }
+                            }
                             """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors").exists());
@@ -90,7 +116,10 @@ class PostControllerTest {
     @Test
     void 탈퇴한_유저의_글은_작성자가_가려진다() throws Exception {
         User author = 인증된_유저("goodbye");
-        postRepository.save(new Post("제목", "내용", author, 4.5));
+        Restaurant restaurant = restaurantRepository.save(new Restaurant(
+                "테스트 가게", "서울 강남구 역삼동 1", null,
+                "서울 강남구", 127.001, 37.501, null));
+        postRepository.save(new Post("제목", "내용", author, 4.5, restaurant));
         author.withdraw();
         userRepository.save(author);
 
@@ -99,5 +128,16 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.content[0].authorName").value("탈퇴한 사용자"));
     }
 
+    @Test
+    void 가게_없이_글을_쓰면_400() throws Exception {
+        mockMvc.perform(post("/api/posts")
+                        .with(user(new CustomUserDetails(인증된_유저("writer3"))))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                    {"title":"제목","content":"내용","rating":4.5}
+                    """))
+                .andExpect(status().isBadRequest());
+    }
 
 }

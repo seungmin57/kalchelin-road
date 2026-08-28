@@ -1,5 +1,6 @@
 package com.kalchelin.kalchelin_road.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,8 @@ public class OwnerReviewRequest {
     @DecimalMin(value = "0.5", message = "평점은 0.5 이상이어야 합니다")
     @DecimalMax(value = "5.0", message = "평점은 5.0 이하여야 합니다")
     private Double rating;   // 평점이 담길 자리
+
+    @Valid
+    @NotNull(message = "가게 정보는 필수입니다")
+    private RestaurantRequest restaurant;
 }

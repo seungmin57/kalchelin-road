@@ -30,11 +30,17 @@ public class Post {
     @Column(nullable = false)
     private Double rating;  // 별점 (0.5 ~ 5.0)
 
-    public Post(String title, String content, User author, Double rating) {
+    // 가게 없는 글은 존재할 수 없다
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    public Post(String title, String content, User author, Double rating, Restaurant restaurant) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.rating = rating;
+        this.restaurant = restaurant;
         this.createdAt = LocalDateTime.now();
     }
 

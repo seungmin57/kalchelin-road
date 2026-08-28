@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -22,6 +23,13 @@ public class RestaurantSearchService {
     private static final String SEARCH_FAILED = "가게 검색에 실패했습니다. 잠시 후 다시 시도해 주세요.";
     private static final int PAGE_SIZE = 15;    // 카카오 최대값
     private static final String RESTAURANT_CATEGORY = "FD6";    // 음식점
+
+    // 특별자치도만 정식 명칭으로 온다. 나머지 시, 도는 이미 축약형
+    private static final Map<String, String> SIDO = Map.of(
+            "강원특별자치도", "강원",
+            "제주특별자치도", "제주",
+            "전북특별자치도", "전북"
+    );
 
     /**
      * DB를 건드리지 않으므로 @Transactional이 없다
@@ -96,6 +104,8 @@ public class RestaurantSearchService {
         if (address == null || address.isBlank()) return "";
 
         String[] tokens = address.split(" ");
-        return tokens.length < 2 ? address : tokens[0] + " " + tokens[1];
+        if (tokens.length < 2) return address;
+
+        return SIDO.getOrDefault(tokens[0], tokens[0]) + " " + tokens[1];
     }
 }

@@ -40,16 +40,21 @@ public class Restaurant {
     @Column(nullable = false)
     private Double latitude;        // 위도 (y)
 
+    //카카오맵 장소 상세 페이지 링크. 표시용이지 식별용이 아니다
+    @Column(length = 200)
+    private String kakaoPlaceUrl;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Restaurant(String name, String address, String roadAddress, String region, Double longitude, Double latitude) {
+    public Restaurant(String name, String address, String roadAddress, String region, Double longitude, Double latitude, String kakaoPlaceUrl) {
         this.name = name;
         this.address = address;
         this.roadAddress = roadAddress;
         this.region = region;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.kakaoPlaceUrl = kakaoPlaceUrl;
         this.placeKey = toPlaceKey(longitude, latitude);
         this.createdAt = LocalDateTime.now();
     }

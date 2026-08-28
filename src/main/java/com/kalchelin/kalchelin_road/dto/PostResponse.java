@@ -13,7 +13,9 @@ public class PostResponse {
     private final String authorName;        // User 통째가 아니라 '이름만'
     private final Long authorId;
     private final Double rating;
+    private final RestaurantResponse restaurant;
     private final LocalDateTime createdAt;
+
 
     // Post 엔티티를 받아서 필요한 것만 뽑아 담는 생성자
     public PostResponse(Post post) {
@@ -24,6 +26,7 @@ public class PostResponse {
         this.authorId = post.getAuthor().getId();
         this.rating = post.getRating();
         this.createdAt = post.getCreatedAt();
+        this.restaurant = new RestaurantResponse(post.getRestaurant());
     }
 
 }

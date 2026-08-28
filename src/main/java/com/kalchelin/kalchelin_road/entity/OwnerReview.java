@@ -27,12 +27,17 @@ public class OwnerReview {
     @Column(nullable = true)    // 이미지가 없는 평가도 허용
     private String imageUrl;    // 저장된 이미지의 경로를 담는 자리(예: "uploads/abc.jpg")
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
     private LocalDateTime createdAt;
 
-    public OwnerReview(String title, String content, double rating) {
+    public OwnerReview(String title, String content, double rating, Restaurant restaurant) {
         this.title = title;
         this.content = content;
         this.rating = rating;
+        this.restaurant = restaurant;
         this.createdAt = LocalDateTime.now();
     }
 
