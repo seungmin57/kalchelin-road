@@ -1,7 +1,9 @@
 package com.kalchelin.kalchelin_road.config;
 
+import com.kalchelin.kalchelin_road.entity.Restaurant;
 import com.kalchelin.kalchelin_road.entity.Role;
 import com.kalchelin.kalchelin_road.entity.User;
+import com.kalchelin.kalchelin_road.repository.RestaurantRepository;
 import com.kalchelin.kalchelin_road.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +15,12 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;      // 여기서도 해싱해서 저장
+    private final RestaurantRepository restaurantRepository;
 
-    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder, RestaurantRepository restaurantRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @Override
@@ -32,6 +36,17 @@ public class DataInitializer implements CommandLineRunner {
         userRepository.save(owner);
         System.out.println("오너 계정 생성 완료: owner / owner1234");
 
+        if (restaurantRepository.count() == 0) {
+            restaurantRepository.save(new Restaurant(
+                    "장칼국수", "강원 강릉시 임당동 161-1", "강원 강릉시 임영로 154",
+                    "강원 강릉시", 128.891996827965, 37.7548794243008, "http://place.map.kakao.com/123964314"));
+            restaurantRepository.save(new Restaurant(
+                    "다래칼국수", "서울 영등포구 양평동4가 119", "서울 영등포구 양평로 116",
+                    "서울 영등포구", 126.894932372881, 37.5375383991428, "http://place.map.kakao.com/851321600"));
+            restaurantRepository.save(new Restaurant(
+                    "옛날칼국수", "서울 노원구 상계동 711-13", "서울 노원구 동일로 1417",
+                    "서울 노원구", 127.0598238649865, 37.654972752624296, "http://place.map.kakao.com/8015984"));
+        }
     }
 
 

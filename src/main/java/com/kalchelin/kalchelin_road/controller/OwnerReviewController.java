@@ -39,7 +39,7 @@ public class OwnerReviewController {
     public ResponseEntity<OwnerReviewResponse> createReview(@Valid @RequestBody OwnerReviewRequest request) {
         // @RequestBody = 브라우저가 보낸 JSON을 위에서 만든 OwnerReviewRequest 그릇에 담아라
         OwnerReview review = ownerReviewService.createReview(request.getTitle(), request.getContent(),
-                request.getRating());
+                request.getRating(), request.getRestaurant());
 
         return ResponseEntity.status(HttpStatus.CREATED)    // 201 상태코드
                 .body(new OwnerReviewResponse(review));
