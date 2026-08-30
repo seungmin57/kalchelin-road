@@ -1,16 +1,15 @@
 package com.kalchelin.kalchelin_road.controller;
 
-import com.kalchelin.kalchelin_road.dto.PageResponse;
-import com.kalchelin.kalchelin_road.dto.RestaurantRequest;
-import com.kalchelin.kalchelin_road.dto.RestaurantResponse;
-import com.kalchelin.kalchelin_road.dto.RestaurantSearchResponse;
+import com.kalchelin.kalchelin_road.dto.*;
 import com.kalchelin.kalchelin_road.entity.Restaurant;
+import com.kalchelin.kalchelin_road.service.PostService;
 import com.kalchelin.kalchelin_road.service.RestaurantSearchService;
 import com.kalchelin.kalchelin_road.service.RestaurantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +24,7 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final RestaurantSearchService restaurantSearchService;
+    private final PostService postService;
 
     // 가게 직접 등록 (ADMIN 보정용). 평소엔 글 작성 시 자동 등록된다
     @PostMapping
@@ -46,8 +46,18 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public RestaurantResponse detail(@PathVariable Long id) {
-        return new RestaurantResponse(restaurantService.findById(id));
+    public RestaurantDetailResponse detail(@PathVariable Long id) {
+        return restaurantService.findDetail(id);
+    }
+
+    // 이 가게에 달린 유저 리뷰 목록
+    @GetMapping("/{id}/posts")
+    public PageResponse<PostResponse> posts(
+            @PathVariable Long id,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return new PageResponse<>(
+                postService.findByRestaurant(id, pageable).map(PostResponse::new));
     }
 
     @PutMapping("/{id}")

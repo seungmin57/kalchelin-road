@@ -76,6 +76,11 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    @Transactional(readOnly = true)
+    public Page<Post> findByRestaurant(Long restaurantId, Pageable pageable) {
+        return postRepository.findByRestaurantId(restaurantId, pageable);
+    }
+
     // 소유권 검사
     private void checkOwner(Post post, User currentUser) {
         if (!post.getAuthor().getId().equals(currentUser.getId())) {

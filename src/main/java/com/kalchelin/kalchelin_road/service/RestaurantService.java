@@ -1,8 +1,14 @@
 package com.kalchelin.kalchelin_road.service;
 
+import com.kalchelin.kalchelin_road.dto.RatingStats;
+import com.kalchelin.kalchelin_road.dto.RestaurantDetailResponse;
 import com.kalchelin.kalchelin_road.dto.RestaurantRequest;
+import com.kalchelin.kalchelin_road.entity.OwnerReview;
+import com.kalchelin.kalchelin_road.entity.Post;
 import com.kalchelin.kalchelin_road.entity.Restaurant;
 import com.kalchelin.kalchelin_road.exception.ResourceNotFoundException;
+import com.kalchelin.kalchelin_road.repository.OwnerReviewRepository;
+import com.kalchelin.kalchelin_road.repository.PostRepository;
 import com.kalchelin.kalchelin_road.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,11 +17,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final PostRepository postRepository;
+    private final OwnerReviewRepository ownerReviewRepository;
 
     // 이미 등록된 가게면 그대로, 없으면 만든다
     // 글을 쓸 때마다 호출되므로 같은 가게에는 항상 같은 Restaurant가 붙는다
@@ -52,6 +62,19 @@ public class RestaurantService {
         Restaurant restaurant = findById(id);
         restaurant.update(request.getName(), request.getAddress(), request.getRoadAddress(), request.getRegion());
         return restaurant;
+    }
+
+    /**
+     * 가게 상세 - 집계와 오너 큐레이션을 함께 돌려준다.
+     * 유저 리뷰 목록은 페이지네이션이 필요하므로 별도 엔드포인트로 뻈다
+     */
+    @Transactional(readOnly = true)
+    public RestaurantDetailResponse findDetail(Long id) {
+        Restaurant restaurant = findById(id);       // 없으면 여기서 404
+        RatingStats stats = postRepository.findRatingStats(id);
+        List<OwnerReview> ownerReviews = ownerReviewRepository.findByRestaurantId(id);
+
+        return RestaurantDetailResponse.of(restaurant, stats, ownerReviews);
     }
 
 }
